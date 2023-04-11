@@ -1,0 +1,35 @@
+{
+    "manifest_version": 3,
+    "name": "My Extension",
+    "version": "1.0",
+    "description": "",
+    "icons": {
+      
+    },
+    "permissions": [
+      
+       "storage" ,
+       "activeTab",
+       "scripting",
+       "tabs",
+       "contextMenus",
+       "offscreen",
+       "declarativeNetRequest"
+    ],
+    
+   
+    "background": {
+        "service_worker": "background.js"
+        
+      
+    },
+    "action": {
+      "default_title": "Save to Folder",
+      "default_icon": {
+        
+     
+      },
+      "default_popup": "popup.html"
+    }
+  }
+  
