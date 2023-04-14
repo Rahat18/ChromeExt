@@ -1,3 +1,5 @@
+// const { response } = require("express");
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "saveToDigiboxx",
@@ -48,6 +50,10 @@ async function getFileFromUrl(url, defaultType = 'image/jpeg') {
 const getUrl = async (url, method, headers, body) => {
   const response = await fetch(url, { method, headers, body })
   return response.json()
+}
+const getUrl2 = async (url, method, headers, body) => {
+  const response = await fetch(url, { method, headers, body })
+   return response
 }
 
 // async function checkLimit(url) {
@@ -148,7 +154,8 @@ async function minio(url) {
     // fileUpload(url , file_id , minioUrl )
     if (minio.status === 'success') {
       console.log("call upload")
-       fileUpload(url , file_id , minioUrl )
+      PreUpload(url , minioUrl , file_id)
+      //  fileUpload(url , file_id , minioUrl )
       // let reqhttp = new XMLHttpRequest();
       // reqhttp.open("PUT", minioUrl, false);
       // reqhttp.onload = () => {
@@ -185,8 +192,57 @@ async function minio(url) {
   });
 }
 
-async function fileUpload(url, file_id, minioUrl) {
-  // console.log("File Upload")
+async function PreUpload(url , minioUrl , file_id) {
+   console.log(minioUrl)
+   console.log(file_id)
+  const file = await getFileFromUrl(url);
+  console.log(file)
+  const preUploadData = new FormData();
+  // preUploadData.append("file_title", '6352_' + file.name);
+  // preUploadData.append("file_type", file.type.split('/')[1]);
+  // fileUpload(url , minioUrl , file_id)
+  const userToken = chrome.storage.sync.get(['userToken'], async function (items) {
+  //   const preUpload = await getUrl(minioUrl, "PUT", {
+  //     // "Content-Type": "application/json",
+  //     "accept": "application/json",
+  //     'Authorization': `Bearer ${items.userToken}`,
+  //     "x-request-referrer": "https://apitest.digiboxx.com/"
+  //   },
+  //     // JSON.stringify({
+        
+  //     // })
+  //     preUploadData
+  //     );
+  //  console.log(preUpload)
+  try {
+    const response = await getUrl2(minioUrl, "PUT", {
+          // "Content-Type": "application/json",
+          // "accept": "application/json",
+          // 'Authorization': `Bearer ${items.userToken}`,
+          // "x-request-referrer": "https://apitest.digiboxx.com/"
+        },
+          // JSON.stringify({
+            
+          // })
+          preUploadData
+          );
+          console.log(response)
+          if(response.status == 200){
+            fileUpload(url , minioUrl , file_id)
+          }
+  } catch (error) {
+    // TypeError: Failed to fetch
+    console.log('There was an error', error);
+  }
+ 
+  
+  });
+ 
+}
+
+async function fileUpload(url, minioUrl , file_id) {
+   console.log("File Upload")
+   console.log(file_id)
   const file = await getFileFromUrl(url);
   console.log(file)
   const fileUploadData = new FormData();
